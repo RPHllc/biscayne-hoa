@@ -1,9 +1,0 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Optional: Smooth scrolling for the whole site */
-html {
-  scroll-behavior: smooth;
-}
-
