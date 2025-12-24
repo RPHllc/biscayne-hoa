@@ -53,7 +53,9 @@ export default function HomePage() {
                 {item.category}
               </div>
               <div className="mt-2 font-bold text-slate-900">{item.title}</div>
-              <div className="mt-2 text-sm text-slate-600">{item.summary}</div>
+              <div className="mt-2 text-sm text-slate-600">
+                {item.excerpt ?? `${item.content.slice(0, 140)}…`}
+              </div>
               <div className="mt-3 text-xs text-slate-400">{item.date}</div>
             </Link>
           ))}

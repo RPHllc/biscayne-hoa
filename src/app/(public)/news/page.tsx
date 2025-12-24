@@ -27,7 +27,9 @@ export default function NewsIndexPage() {
                 </Link>
               </h3>
 
-              <p className="text-slate-600 mt-2">{item.summary}</p>
+              <p className="text-slate-600 mt-2">
+                {item.excerpt ?? `${item.content.slice(0, 140)}…`}
+              </p>
 
               <div className="text-xs text-slate-400 mt-3">{item.date}</div>
             </div>
