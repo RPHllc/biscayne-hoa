@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { getAnnouncements } from '@/lib/content/announcements';
 import { getEvents } from '@/lib/content/events';
+import { getAllNews } from '@/lib/content/news';
 
 export default function HomePage() {
   const announcements = getAnnouncements().slice(0, 2);
   const events = getEvents().slice(0, 3);
+  const latest = getAllNews().slice(0, 3);
 
   return (
     <div className="space-y-10">
@@ -26,6 +28,35 @@ export default function HomePage() {
           >
             Resident Portal
           </Link>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex items-end justify-between">
+          <h2 className="text-2xl font-bold text-slate-900">Latest News</h2>
+          <Link
+            href="/news"
+            className="text-teal-700 font-medium hover:underline"
+          >
+            View all
+          </Link>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {latest.map((item) => (
+            <Link
+              key={item.slug}
+              href={`/news/${item.slug}`}
+              className="block bg-white border border-slate-200 rounded-xl p-6 hover:border-teal-300 hover:shadow-sm transition"
+            >
+              <div className="text-xs font-semibold text-teal-700 uppercase">
+                {item.category}
+              </div>
+              <div className="mt-2 font-bold text-slate-900">{item.title}</div>
+              <div className="mt-2 text-sm text-slate-600">{item.summary}</div>
+              <div className="mt-3 text-xs text-slate-400">{item.date}</div>
+            </Link>
+          ))}
         </div>
       </section>
 

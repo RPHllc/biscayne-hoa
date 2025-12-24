@@ -1,10 +1,11 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      target: runner # Production stage
     container_name: biscayne-hoa
     restart: always
     ports:
       - "8080:3000"
-    #environment:
-    #  - PORT=3000
-    #command: ["npm", "run", "dev", "--", "-p", "3000"]
+    environment:
+      - NODE_ENV = production

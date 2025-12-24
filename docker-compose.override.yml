@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      target: development # Dev stage
+    ports:
+      - "8081:3000" # Standard Next.js dev port
+    volumes:
+      - .:/app
+      - /app/node_modules # Prevent host node_modules override
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev"]
