@@ -1,14 +1,20 @@
 import './globals.css';
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { Waves } from 'lucide-react';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Biscayne Point HOA',
   description:
     'Official digital hub for the Biscayne Point Homeowners Association',
 };
 
-const navLinks = [
+type NavLink = {
+  href: string;
+  label: string;
+};
+
+const navLinks: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/board', label: 'Board & Committees' },
   { href: '/arb', label: 'ARB' },
@@ -17,7 +23,7 @@ const navLinks = [
   { href: '/pay', label: 'Pay Dues' },
 ];
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-slate-50 font-sans text-slate-800">
@@ -36,6 +42,7 @@ export default function RootLayout({ children }) {
                 </p>
               </div>
             </Link>
+
             <nav className="hidden lg:flex gap-6 items-center">
               {navLinks.map((link) => (
                 <Link
@@ -46,6 +53,7 @@ export default function RootLayout({ children }) {
                   {link.label}
                 </Link>
               ))}
+
               <Link
                 href="/contact"
                 className="bg-teal-700 hover:bg-teal-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition-all"
