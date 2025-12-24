@@ -1,6 +1,8 @@
 import { getNewsBySlug, getNewsSlugs } from '../../../../lib/content/news';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-static';
+
 export function generateStaticParams() {
   return getNewsSlugs().map((slug) => ({ slug }));
 }
@@ -22,7 +24,9 @@ export default async function NewsArticlePage({
         {article.category ? ` • ${article.category}` : ''}
       </div>
 
-      <h1 className="text-4xl font-bold text-slate-900 mt-2">{article.title}</h1>
+      <h1 className="text-4xl font-bold text-slate-900 mt-2">
+        {article.title}
+      </h1>
 
       {article.excerpt ? (
         <p className="mt-4 text-lg text-slate-600">{article.excerpt}</p>
