@@ -1,11 +1,8 @@
-import Link from 'next/link';
+import { getNewsBySlug, getNewsSlugs } from '../../../../lib/content/news';
 import { notFound } from 'next/navigation';
-import { getAllNews, getNewsBySlug } from '@/lib/content/news';
-
-export const runtime = 'edge';
 
 export function generateStaticParams() {
-  return getAllNews().map((item) => ({ slug: item.slug }));
+  return getNewsSlugs().map((slug) => ({ slug }));
 }
 
 export default async function NewsArticlePage({
@@ -15,32 +12,25 @@ export default async function NewsArticlePage({
 }) {
   const { slug } = await params;
 
-  const item = getNewsBySlug(slug);
-  if (!item) notFound();
+  const article = getNewsBySlug(slug);
+  if (!article) return notFound();
 
   return (
-    <div className="space-y-8">
-      <div>
-        <Link
-          href="/news"
-          className="text-teal-700 font-medium hover:underline"
-        >
-          ← Back to News
-        </Link>
-        <div className="mt-4 text-xs font-semibold text-teal-700 uppercase">
-          {item.category}
-        </div>
-        <h1 className="text-4xl font-bold text-slate-900 mt-2">{item.title}</h1>
-        <div className="text-sm text-slate-500 mt-2">{item.date}</div>
+    <article className="max-w-3xl">
+      <div className="text-sm text-slate-500">
+        {article.date}
+        {article.category ? ` • ${article.category}` : ''}
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <div className="space-y-4 text-slate-700 leading-relaxed">
-          {item.body.split('\n\n').map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
-        </div>
+      <h1 className="text-4xl font-bold text-slate-900 mt-2">{article.title}</h1>
+
+      {article.excerpt ? (
+        <p className="mt-4 text-lg text-slate-600">{article.excerpt}</p>
+      ) : null}
+
+      <div className="prose prose-slate mt-8 whitespace-pre-wrap">
+        {article.content}
       </div>
-    </div>
+    </article>
   );
 }
