@@ -4,7 +4,6 @@ function pad2(n: number) {
   return String(n).padStart(2, '0');
 }
 
-// Convert date to UTC iCal format: YYYYMMDDTHHMMSSZ
 function toIcsUtc(dt: Date) {
   return (
     dt.getUTCFullYear() +
@@ -18,7 +17,6 @@ function toIcsUtc(dt: Date) {
   );
 }
 
-// Escape text per RFC 5545 basics
 function esc(text: string) {
   return text
     .replace(/\\/g, '\\\\')
@@ -27,16 +25,13 @@ function esc(text: string) {
     .replace(/;/g, '\\;');
 }
 
-// Default event duration when end is missing
 const DEFAULT_DURATION_MINUTES = 60;
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export function GET() {
   const events = getEvents();
-
-  const now = new Date();
-  const dtstamp = toIcsUtc(now);
+  const dtstamp = toIcsUtc(new Date());
 
   const lines: string[] = [];
   lines.push('BEGIN:VCALENDAR');
@@ -49,12 +44,10 @@ export function GET() {
 
   for (const e of events) {
     const start = new Date(e.start);
-
     const end = e.end
       ? new Date(e.end)
       : new Date(start.getTime() + DEFAULT_DURATION_MINUTES * 60 * 1000);
 
-    // Stable-ish UID (good enough for HOA; change later if you add real ids)
     const uid = `${esc(e.title)}-${start.toISOString()}@biscaynepoint`;
 
     lines.push('BEGIN:VEVENT');

@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAllNews, getNewsBySlug } from '@/lib/content/news';
 
+export const runtime = 'edge';
+
 export function generateStaticParams() {
   return getAllNews().map((item) => ({ slug: item.slug }));
 }
