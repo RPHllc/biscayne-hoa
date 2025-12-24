@@ -23,10 +23,17 @@ export default function PayCheckoutButton() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Checkout failed');
+      type CheckoutResponse =
+  | { url: string }
+  | { error: string };
 
-      if (data.url) window.location.href = data.url;
+      const data = (await res.json()) as CheckoutResponse;
+
+      if (!res.ok) {
+        throw new Error('error' in data ? data.error : 'Checkout failed');
+      }
+
+      if ('url' in data && data.url) window.location.href = data.url;
       else throw new Error('Missing checkout url');
     } catch (e: any) {
       alert(e?.message || 'Checkout failed');
