@@ -25,15 +25,21 @@ export default function PayDuesForm({
   const [houseNumber, setHouseNumber] = useState('');
   const [street, setStreet] = useState(streets[0] ?? '');
   const [amount, setAmount] = useState(String(minPayment));
+  const amountNumber = Number(amount);
+  const isAmountValid =
+    Number.isFinite(amountNumber) && amountNumber >= minPayment;
+  const isFormValid =
+    email.trim().length > 0 &&
+    houseNumber.trim().length > 0 &&
+    street.trim().length > 0 &&
+    isAmountValid;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setState('sending');
     setError(null);
 
-    const amountNumber = Number(amount);
-
-    if (!Number.isFinite(amountNumber) || amountNumber < minPayment) {
+    if (!isAmountValid) {
       setError(`Amount must be at least $${minPayment}`);
       setState('error');
       return;
@@ -160,10 +166,10 @@ export default function PayDuesForm({
 
       <button
         type="submit"
-        disabled={state === 'sending'}
+        disabled={state === 'sending' || !isFormValid}
         className="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50"
       >
-        {state === 'sending' ? 'Redirecting…' : 'Pay now'}
+        {state === 'sending' ? 'Redirecting…' : 'Continue to payment'}
       </button>
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
