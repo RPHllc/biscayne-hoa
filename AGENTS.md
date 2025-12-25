@@ -36,3 +36,8 @@
 - Contact form posts to `src/app/api/contact/route.ts`.
 - Required env vars: `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`.
 - Recommended setup: Resend for sending + Cloudflare Email Routing to forward `info@biscaynepoint.org` to an inbox.
+
+## Dues Configuration
+- Dues settings live in `content/dues.json`.
+- `annualDues` is displayed to residents; `minPayment` enforces the minimum accepted payment.
+- Backend uses `DUES_MIN_PAYMENT` as a fallback if the content file is not synced to the API runtime.

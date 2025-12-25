@@ -5,7 +5,21 @@ export const runtime = 'edge';
 type CheckoutRequest = {
   amount: number; // dollars
   description?: string;
+  email?: string;
+  address?: {
+    houseNumber?: string;
+    street?: string;
+  };
 };
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function getMinPayment() {
+  const envValue = Number(process.env.DUES_MIN_PAYMENT);
+  return Number.isFinite(envValue) && envValue > 0 ? envValue : 100;
+}
 
 export async function POST(request: Request) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -28,9 +42,10 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
 
   const amount = Number(body.amount);
-  if (!Number.isFinite(amount) || amount <= 0) {
+  const minPayment = getMinPayment();
+  if (!Number.isFinite(amount) || amount < minPayment) {
     return Response.json(
-      { error: 'Amount must be a positive number' },
+      { error: `Amount must be at least $${minPayment}` },
       { status: 400 }
     );
   }
@@ -38,14 +53,30 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Amount too large' }, { status: 400 });
   }
 
+  const email = body.email?.trim();
+  if (!email || !isValidEmail(email)) {
+    return Response.json({ error: 'Valid email is required' }, { status: 400 });
+  }
+
+  const houseNumber = body.address?.houseNumber?.trim();
+  const street = body.address?.street?.trim();
+  if (!houseNumber || !street) {
+    return Response.json(
+      { error: 'House number and street are required' },
+      { status: 400 }
+    );
+  }
+
   const origin = new URL(request.url).origin;
 
   // Stripe expects amount in cents
   const amountCents = Math.round(amount * 100);
+  const addressLine = `${houseNumber} ${street}`.trim();
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
+    customer_email: email,
     line_items: [
       {
         price_data: {
@@ -64,6 +95,8 @@ export async function POST(request: Request) {
     metadata: {
       source: 'biscayne-hoa-site',
       description: body.description?.trim() || '',
+      payer_email: email,
+      address: addressLine,
     },
   });
 
