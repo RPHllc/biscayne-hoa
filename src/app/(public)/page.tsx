@@ -14,7 +14,15 @@ export default function HomePage() {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-2xl bg-slate-900 text-white p-10">
+      <section className="relative overflow-hidden rounded-2xl bg-slate-900 text-white p-10">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/images/Biscayne_Point_entrance.jpg')",
+          }}
+        />
+        <div className="absolute inset-0 bg-slate-900/55" />
+        <div className="relative">
         <h2 className="text-4xl font-bold">Biscayne Point HOA</h2>
         <p className="text-slate-200 mt-3 max-w-2xl">
           Community updates, documents, and payments — in one place.
@@ -32,6 +40,7 @@ export default function HomePage() {
           >
             Resident Portal
           </Link>
+        </div>
         </div>
       </section>
 
