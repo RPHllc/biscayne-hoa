@@ -31,3 +31,8 @@
 ## Configuration & Secrets
 - Stripe integration expects `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` at runtime.
 - Use `.env.local` for local secrets; never commit credentials.
+
+## Email (Resend)
+- Contact form posts to `src/app/api/contact/route.ts`.
+- Required env vars: `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`.
+- Recommended setup: Resend for sending + Cloudflare Email Routing to forward `info@biscaynepoint.org` to an inbox.
