@@ -17,7 +17,7 @@ export default function PayPage({
         <p className="text-slate-600">
           Secure online payment processed by Stripe.
         </p>
-        <PayCheckoutButton />
+        <PayCheckoutButton amount={100} description="HOA Dues" />
         <p className="text-xs text-slate-500">
           You will be redirected to Stripe to complete payment.
         </p>

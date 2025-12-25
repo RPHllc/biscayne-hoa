@@ -2,30 +2,27 @@
 
 import { useState } from 'react';
 
-export default function PayCheckoutButton() {
+type Props = {
+  amount: number; // dollars
+  description?: string;
+};
+
+export default function PayCheckoutButton({ amount, description }: Props) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  async function startCheckout() {
+  async function handleClick() {
     setLoading(true);
-    try {
-      // Minimal v1 defaults
-      const payload = {
-        amount_cents: 35000, // TODO: set your real dues amount
-        purpose: 'dues',
-        // Optional: later read from form inputs
-        email: '',
-        address: '',
-      };
+    setError(null);
 
+    try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description }),
       });
 
-      type CheckoutResponse =
-  | { url: string }
-  | { error: string };
+      type CheckoutResponse = { url: string } | { error: string };
 
       const data = (await res.json()) as CheckoutResponse;
 
@@ -33,21 +30,28 @@ export default function PayCheckoutButton() {
         throw new Error('error' in data ? data.error : 'Checkout failed');
       }
 
-      if ('url' in data && data.url) window.location.href = data.url;
-      else throw new Error('Missing checkout url');
-    } catch (e: any) {
-      alert(e?.message || 'Checkout failed');
+      if ('url' in data && data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('Missing checkout URL');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Payment failed');
       setLoading(false);
     }
   }
 
   return (
-    <button
-      onClick={startCheckout}
-      disabled={loading}
-      className="inline-flex items-center justify-center bg-teal-700 hover:bg-teal-800 disabled:opacity-60 text-white px-5 py-2 rounded-lg text-sm font-semibold transition"
-    >
-      {loading ? 'Redirecting…' : 'Pay by Card (Stripe)'}
-    </button>
+    <div>
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        className="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50"
+      >
+        {loading ? 'Redirecting…' : `Pay $${amount}`}
+      </button>
+
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+    </div>
   );
 }
