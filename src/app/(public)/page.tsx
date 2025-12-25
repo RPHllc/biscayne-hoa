@@ -18,29 +18,29 @@ export default function HomePage() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/Biscayne_Point_entrance.jpg')",
+            backgroundImage: "url('/images/biscayne_point_entrance.jpg')",
           }}
         />
         <div className="absolute inset-0 bg-slate-900/55" />
         <div className="relative">
-        <h2 className="text-4xl font-bold">Biscayne Point HOA</h2>
-        <p className="text-slate-200 mt-3 max-w-2xl">
-          Community updates, documents, and payments — in one place.
-        </p>
-        <div className="mt-6 flex gap-3">
-          <Link
-            className="bg-teal-700 hover:bg-teal-800 px-5 py-2 rounded-lg font-medium"
-            href="/pay"
-          >
-            Pay Dues
-          </Link>
-          <Link
-            className="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-lg font-medium"
-            href="/portal"
-          >
-            Resident Portal
-          </Link>
-        </div>
+          <h2 className="text-4xl font-bold">Biscayne Point HOA</h2>
+          <p className="text-slate-200 mt-3 max-w-2xl">
+            Community updates, documents, and payments — in one place.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <Link
+              className="bg-teal-700 hover:bg-teal-800 px-5 py-2 rounded-lg font-medium"
+              href="/pay"
+            >
+              Pay Dues
+            </Link>
+            <Link
+              className="bg-white/10 hover:bg-white/20 px-5 py-2 rounded-lg font-medium"
+              href="/portal"
+            >
+              Resident Portal
+            </Link>
+          </div>
         </div>
       </section>
 
