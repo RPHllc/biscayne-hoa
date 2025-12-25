@@ -1,0 +1,48 @@
+{
+  "officers": [
+    { "name": "Ronnie Issenberg", "title": "President" },
+    { "name": "Charlie Alvarez", "title": "Vice-President" },
+    { "name": "Bonnie Lee Shapiro", "title": "Secretary" },
+    { "name": "Silvio Rodriquez", "title": "Co-Treasurer" },
+    { "name": "Rachel Umlas", "title": "Co-Treasurer" }
+  ],
+  "membersAtLarge": [
+    { "name": "Brian Gilderman", "note": "Past President" },
+    { "name": "Ira Krieger" },
+    { "name": "David Farcy" },
+    { "name": "Scott Sandelin" },
+    { "name": "Anita Krieger" },
+    { "name": "Arthur Lane" },
+    { "name": "Peter Burgess" },
+    { "name": "Sandy Edelman" },
+    { "name": "Terry Blechman" },
+    { "name": "Larry Schweiger" },
+    { "name": "Maurice Soriano" }
+  ],
+  "committees": [
+    {
+      "name": "Website and Payments",
+      "description": "Committee Head to handle our website, setting up Zelle and Apple Pay (including QR code) to allow additional options to pay Annual HOA dues."
+    },
+    {
+      "name": "Dues and Collections",
+      "description": "Committee Head to handle Dues Notices, Collections and Managing HOA Banking."
+    },
+    {
+      "name": "Spring Block Party",
+      "description": "Committee Head to handle the Spring Block-Party."
+    },
+    {
+      "name": "Island Special Projects",
+      "description": "Committee Head to handle Island Special Projects, including ordering additional Police Officers for Halloween."
+    },
+    {
+      "name": "Security and Guard House",
+      "description": "Committee Head to handle Security Guard House and interaction between the City and Security Company."
+    },
+    {
+      "name": "Special Taxing District",
+      "description": "Committee Head to handle Annual Special Taxing District Budget Negotiations with the City of Miami Beach."
+    }
+  ]
+}

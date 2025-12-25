@@ -1,0 +1,26 @@
+[
+  {
+    "title": "HOA By Laws",
+    "description": "Governing rules and operating procedures for the association.",
+    "category": "Governing Documents",
+    "file": "/documents/bpha-by-laws.pdf"
+  },
+  {
+    "title": "Decal Application",
+    "description": "Application for the Biscayne Point vehicle decal.",
+    "category": "Applications",
+    "file": "/documents/decal-application.pdf"
+  },
+  {
+    "title": "Membership Letter",
+    "description": "Annual membership information and dues notice.",
+    "category": "Membership",
+    "file": "/documents/membership-letter.pdf"
+  },
+  {
+    "title": "History of Biscayne Point",
+    "description": "Historic document about the creation of the island.",
+    "category": "History",
+    "file": "/documents/history-of-normandy-isles-and-north-beach.pdf"
+  }
+]

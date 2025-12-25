@@ -1,6 +1,7 @@
 services:
-  app:
+  web:
     build:
+      context: .
       target: development # Dev stage
     ports:
       - "8081:3000" # Standard Next.js dev port
