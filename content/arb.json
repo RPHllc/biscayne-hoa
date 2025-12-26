@@ -1,0 +1,46 @@
+{
+  "title": "Architectural Review Board (ARB)",
+  "intro": "Biscayne Point HOA does not impose architectural rules or run an ARB process. However, exterior work in Miami Beach may be subject to City permits, zoning, flood, and historic requirements. Use the quick check below and the city links to confirm what applies to your project.",
+  "quickCheck": {
+    "title": "Quick Check: Do I need approval?",
+    "items": [
+      {
+        "question": "Repainting my house the same color?",
+        "answer": "Usually no HOA approval is required. Check City rules if the property is in a special district or if you're changing exterior finishes."
+      },
+      {
+        "question": "Installing a new fence?",
+        "answer": "Likely requires City review/permit. Height, materials, and location rules may apply."
+      },
+      {
+        "question": "Replacing windows or doors?",
+        "answer": "Often requires a permit and must meet current hurricane and building codes."
+      },
+      {
+        "question": "Landscaping or planting a tree?",
+        "answer": "May require City guidance if it affects visibility, right-of-way, swales, or protected trees."
+      }
+    ]
+  },
+  "usefulLinks": {
+    "title": "Useful Links",
+    "items": [
+      {
+        "label": "Miami Beach Building Department",
+        "href": "https://www.miamibeachfl.gov/city-hall/building/",
+        "description": "Permits, inspections, and guidance for exterior work and construction."
+      },
+      {
+        "label": "Apply for a Permit (Miami Beach)",
+        "href": "https://www.miamibeachfl.gov/city-hall/building/permits/",
+        "description": "Start a permit application and review what documentation is typically required."
+      },
+      {
+        "label": "City Code & Zoning",
+        "href": "https://library.municode.com/fl/miami_beach/codes/code_of_ordinances",
+        "description": "Search City ordinances for fences, setbacks, landscaping, and other rules."
+      }
+    ]
+  },
+  "disclaimer": "This page is informational and not legal or permitting advice. For definitive requirements, contact the City of Miami Beach."
+}
