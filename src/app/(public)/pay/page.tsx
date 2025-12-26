@@ -33,13 +33,6 @@ export default function PayPage({
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
-        <h3 className="text-xl font-bold">Zelle (Optional)</h3>
-        <p className="text-slate-600">
-          If you prefer Zelle, send payment to the HOA’s Zelle address and
-          include your home address in the memo.
-        </p>
-      </div>
     </div>
   );
 }
