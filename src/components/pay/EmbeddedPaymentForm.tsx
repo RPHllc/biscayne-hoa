@@ -2,9 +2,17 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js';
+import type { StripeElementsOptions } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 function InnerForm({ amount }: { amount: number }) {
   const stripe = useStripe();
@@ -65,7 +73,10 @@ export default function EmbeddedPaymentForm() {
       body: JSON.stringify({ amount: newAmount, description: 'HOA Dues' }),
     });
 
-    const data = (await res.json().catch(() => null)) as null | { clientSecret?: string; error?: string };
+    const data = (await res.json().catch(() => null)) as null | {
+      clientSecret?: string;
+      error?: string;
+    };
     if (!res.ok || !data?.clientSecret) {
       setLoading(false);
       throw new Error(data?.error || 'Failed to start payment');
@@ -80,8 +91,8 @@ export default function EmbeddedPaymentForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const options = useMemo(() => {
-    if (!clientSecret) return null;
+  const options = useMemo<StripeElementsOptions | undefined>(() => {
+    if (!clientSecret) return undefined;
     return {
       clientSecret,
       appearance: {
@@ -89,7 +100,8 @@ export default function EmbeddedPaymentForm() {
         variables: {
           colorPrimary: '#0f766e', // teal vibe
           borderRadius: '10px',
-          fontFamily: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial',
+          fontFamily:
+            'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial',
         },
       },
     };
@@ -99,7 +111,8 @@ export default function EmbeddedPaymentForm() {
     <div className="max-w-xl">
       <h1 className="text-3xl font-bold text-slate-900">Pay HOA Dues</h1>
       <p className="mt-2 text-slate-600">
-        Secure payment processed by Stripe — without leaving the Biscayne Point site.
+        Secure payment processed by Stripe — without leaving the Biscayne Point
+        site.
       </p>
 
       <div className="mt-6 bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
@@ -133,7 +146,9 @@ export default function EmbeddedPaymentForm() {
         />
 
         {loading || !options ? (
-          <div className="text-sm text-slate-500">Loading secure payment form…</div>
+          <div className="text-sm text-slate-500">
+            Loading secure payment form…
+          </div>
         ) : (
           <Elements stripe={stripePromise} options={options}>
             <InnerForm amount={amount} />
