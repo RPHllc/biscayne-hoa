@@ -1,85 +1,107 @@
+import { Mail, MapPin, Shield } from 'lucide-react';
 import ContactForm from '@/components/contact/ContactForm';
 import { getContactContent } from '@/lib/content/contact';
 
+export const runtime = 'edge';
+
+const ICONS = {
+  'map-pin': MapPin,
+  shield: Shield,
+  mail: Mail,
+} as const;
+
 export default function ContactPage() {
-  const { email, address, phoneNumbers, contacts } = getContactContent();
+  const content = getContactContent();
 
   return (
-    <div className="space-y-10">
-      <section className="space-y-3">
-        <h2 className="text-3xl font-bold">Contact</h2>
-        <p className="text-slate-600">
-          Reach out to the Biscayne Point HOA team with questions or feedback.
-        </p>
-      </section>
+    <div className="space-y-3">
+      <h2 className="text-4xl font-extrabold text-slate-900">Get in Touch</h2>
+      <p className="text-lg text-slate-600">
+        Have a question about dues, security, or community events? We&apos;re
+        here to help.
+      </p>
 
-      <section className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h3 className="text-xl font-bold text-slate-900">Send a Message</h3>
-          <p className="text-sm text-slate-600 mt-2">
-            Messages are delivered to the HOA inbox. We will respond as soon as
-            possible.
-          </p>
-          <div className="mt-6">
-            <ContactForm />
-          </div>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-6">
+        <div className="lg:col-span-5 space-y-6">
+          {content.cards.map((card) => {
+            const Icon = ICONS[card.icon];
+            return (
+              <InfoCard
+                key={card.id}
+                icon={<Icon className="w-5 h-5 text-teal-700" />}
+                title={card.title}
+              >
+                {card.email ? (
+                  <a
+                    href={`mailto:${card.email}`}
+                    className="font-medium text-teal-700 hover:text-teal-800 underline underline-offset-4"
+                  >
+                    {card.email}
+                  </a>
+                ) : null}
 
-        <div className="space-y-6">
-          <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-slate-900">HOA Contact</h3>
-            <div className="mt-3 space-y-2 text-sm text-slate-600">
-              <div>
-                Email:{' '}
-                <a
-                  className="text-teal-700 font-medium hover:underline"
-                  href={`mailto:${email}`}
-                >
-                  {email}
-                </a>
-              </div>
-              {phoneNumbers.length > 0 ? (
-                <div>
-                  Phone:{' '}
-                  <div className="mt-1 space-y-1">
-                    {phoneNumbers.map((phone) => (
-                      <div key={phone}>{phone}</div>
+                {card.lines?.length ? (
+                  <div className="text-slate-600 leading-relaxed mt-2">
+                    {card.lines.map((line, i) => (
+                      <div
+                        key={i}
+                        className={i === 0 ? 'font-medium text-slate-900' : ''}
+                      >
+                        {line}
+                      </div>
                     ))}
                   </div>
-                </div>
-              ) : null}
-              {address ? <div>Address: {address}</div> : null}
+                ) : null}
+
+                {card.note ? (
+                  <div className="text-sm text-slate-500 mt-2">{card.note}</div>
+                ) : null}
+              </InfoCard>
+            );
+          })}
+        </div>
+
+        <div className="lg:col-span-7">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="px-6 py-5 border-b border-slate-100">
+              <h3 className="text-xl font-bold text-slate-900">
+                {content.form?.title ?? 'Send a Message'}
+              </h3>
+            </div>
+            <div className="p-6">
+              <ContactForm contactContent={content} />
+              <p className="text-xs text-slate-500 mt-4">
+                {content.form?.subtitle ??
+                  'Messages are delivered to the HOA inbox. We will respond as soon as possible.'}
+              </p>
             </div>
           </div>
-
-          {contacts.length > 0 ? (
-            <div className="bg-white border border-slate-200 rounded-xl p-6">
-              <h3 className="text-xl font-bold text-slate-900">Key Contacts</h3>
-              <div className="mt-3 space-y-3 text-sm text-slate-600">
-                {contacts.map((person) => (
-                  <div key={person.name}>
-                    <div className="font-semibold text-slate-900">
-                      {person.name}
-                    </div>
-                    {person.role ? <div>{person.role}</div> : null}
-                    {person.email ? (
-                      <div>
-                        <a
-                          className="text-teal-700 font-medium hover:underline"
-                          href={`mailto:${person.email}`}
-                        >
-                          {person.email}
-                        </a>
-                      </div>
-                    ) : null}
-                    {person.phone ? <div>{person.phone}</div> : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
+
+function InfoCard({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+      <div className="flex items-start gap-3">
+        <div className="mt-1 w-9 h-9 rounded-xl bg-teal-50 flex items-center justify-center">
+          {icon}
+        </div>
+        <div>
+          <div className="text-lg font-bold text-slate-900">{title}</div>
+          <div className="mt-2">{children}</div>
+        </div>
+      </div>
     </div>
   );
 }

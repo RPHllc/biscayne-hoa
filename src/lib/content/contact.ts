@@ -1,22 +1,24 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import contactData from '../../../content/contact.json';
 
-export type ContactPerson = {
-  name: string;
-  role?: string;
+export type ContactCard = {
+  id: string;
+  icon: 'map-pin' | 'shield' | 'mail';
+  title: string;
+  lines?: string[];
+  note?: string;
   email?: string;
-  phone?: string;
 };
 
 export type ContactContent = {
-  email: string;
-  address?: string;
-  phoneNumbers: string[];
-  contacts: ContactPerson[];
+  cards: ContactCard[];
+  form?: {
+    title?: string;
+    subtitle?: string;
+    subjects?: string[];
+    toEmail?: string;
+  };
 };
 
 export function getContactContent(): ContactContent {
-  const filePath = path.join(process.cwd(), 'content', 'contact.json');
-  const raw = fs.readFileSync(filePath, 'utf8');
-  return JSON.parse(raw) as ContactContent;
+  return contactData as ContactContent;
 }

@@ -1,6 +1,40 @@
 {
-  "email": "info@biscaynepoint.org",
-  "address": "1101 South Biscayne Point Road, Miami Beach, Florida 33141",
-  "phoneNumbers": [],
-  "contacts": []
+  "cards": [
+    {
+      "id": "mailing",
+      "icon": "map-pin",
+      "title": "Mailing Address",
+      "lines": [
+        "Biscayne Point HOA",
+        "1101 South Biscayne Point Road",
+        "Miami Beach, Florida 33141"
+      ]
+    },
+    {
+      "id": "guardhouse",
+      "icon": "shield",
+      "title": "Guardhouse (24/7)",
+      "lines": ["305-555-0199"],
+      "note": "For immediate security concerns, call 911."
+    },
+    {
+      "id": "general",
+      "icon": "mail",
+      "title": "General Inquiries",
+      "email": "info@biscaynepoint.org"
+    }
+  ],
+
+  "form": {
+    "title": "Send a Message",
+    "subtitle": "Messages are delivered to the HOA inbox. We will respond as soon as possible.",
+    "subjects": [
+      "General Inquiry",
+      "Dues / Payments",
+      "Website / Content Update",
+      "Security / Guardhouse",
+      "Events / Calendar"
+    ],
+    "toEmail": "info@biscaynepoint.org"
+  }
 }
