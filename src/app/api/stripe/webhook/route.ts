@@ -148,10 +148,7 @@ export async function POST(request: Request) {
 
   if (event.type === 'payment_intent.succeeded') {
     const intent = event.data.object as Stripe.PaymentIntent;
-    const payerEmail =
-      intent.receipt_email ||
-      intent.metadata?.payer_email ||
-      intent.charges?.data?.[0]?.billing_details?.email;
+    const payerEmail = intent.receipt_email || intent.metadata?.payer_email;
 
     if (!paymentsToEmail || !paymentsFromEmail) {
       console.error('Missing payment email env vars');
@@ -167,7 +164,7 @@ export async function POST(request: Request) {
 
     const donationCents = Number(intent.metadata?.donation_cents) || 0;
     const address = intent.metadata?.address || 'Unknown address';
-    const method = intent.charges?.data?.[0]?.payment_method_details?.type;
+    const method = intent.payment_method_types?.[0];
 
     await sendPaymentEmails({
       payerEmail,
