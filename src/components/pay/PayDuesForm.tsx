@@ -1,178 +1,255 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import type { StripeElementsOptions } from '@stripe/stripe-js';
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 type Props = {
   minPayment: number;
-  suggestedDonation?: number;
+  suggestedDonation: number;
   streets: string[];
 };
 
-type FormState = 'idle' | 'sending' | 'error';
+function InnerForm({
+  amount,
+  email,
+  address,
+  street,
+}: {
+  amount: number;
+  email: string;
+  address: string;
+  street: string;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage(null);
+
+    if (!stripe || !elements) return;
+
+    setSubmitting(true);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/pay/success`,
+      },
+      redirect: 'if_required',
+    });
+
+    if (error) setMessage(error.message || 'Payment failed');
+    else setMessage('Payment completed. Thank you!');
+    setSubmitting(false);
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <PaymentElement />
+
+      {message ? (
+        <div className="text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-lg p-3">
+          {message}
+        </div>
+      ) : null}
+
+      <button
+        type="submit"
+        disabled={!stripe || submitting}
+        className="w-full bg-teal-700 hover:bg-teal-800 disabled:opacity-60 text-white px-5 py-3 rounded-lg font-semibold transition"
+      >
+        {submitting ? 'Processing…' : `Pay $${amount.toFixed(2)}`}
+      </button>
+
+      <div className="text-xs text-slate-500">
+        Secure payment processed by Stripe. Apple Pay / Google Pay appear when
+        available.
+      </div>
+    </form>
+  );
+}
 
 export default function PayDuesForm({
   minPayment,
   suggestedDonation,
   streets,
 }: Props) {
-  const suggestedTotal =
-    minPayment + (suggestedDonation && suggestedDonation > 0
-      ? suggestedDonation
-      : 0);
-  const [state, setState] = useState<FormState>('idle');
-  const [error, setError] = useState<string | null>(null);
+  const [street, setStreet] = useState(streets[0] || '');
+  const [house, setHouse] = useState('');
   const [email, setEmail] = useState('');
-  const [houseNumber, setHouseNumber] = useState('');
-  const [street, setStreet] = useState(streets[0] ?? '');
-  const [amount, setAmount] = useState(String(minPayment));
-  const amountNumber = Number(amount);
-  const isAmountValid =
-    Number.isFinite(amountNumber) && amountNumber >= minPayment;
-  const isFormValid =
-    email.trim().length > 0 &&
-    houseNumber.trim().length > 0 &&
-    street.trim().length > 0 &&
-    isAmountValid;
+  const [amount, setAmount] = useState(minPayment + suggestedDonation);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setState('sending');
-    setError(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [initError, setInitError] = useState<string | null>(null);
 
-    if (!isAmountValid) {
-      setError(`Amount must be at least $${minPayment}`);
-      setState('error');
-      return;
-    }
+  const address = house && street ? `${house} ${street}` : '';
+
+  async function createIntent() {
+    setLoading(true);
+    setInitError(null);
+    setClientSecret(null);
 
     try {
-      const res = await fetch('/api/checkout', {
+      const res = await fetch('/api/payments/create-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amountNumber,
-          description: 'HOA Dues',
-          email,
-          address: {
-            houseNumber,
-            street,
-          },
-        }),
+        body: JSON.stringify({ amount, email, address, street }),
       });
 
-      const data = (await res.json()) as { url?: string; error?: string };
+      const data = (await res.json().catch(() => null)) as null | {
+        clientSecret?: string;
+        error?: string;
+      };
+      if (!res.ok || !data?.clientSecret)
+        throw new Error(data?.error || 'Failed to initialize payment');
 
-      if (!res.ok) {
-        throw new Error(data.error ?? 'Checkout failed');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('Missing checkout URL');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Payment failed');
-      setState('error');
+      setClientSecret(data.clientSecret);
+    } catch (e) {
+      setInitError(
+        e instanceof Error ? e.message : 'Failed to initialize payment'
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
+  const elementsOptions = useMemo<StripeElementsOptions | null>(() => {
+    if (!clientSecret) return null;
+    return {
+      clientSecret,
+      appearance: {
+        theme: 'stripe',
+        variables: {
+          colorPrimary: '#0f766e', // teal
+          borderRadius: '10px',
+          fontFamily:
+            'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial',
+        },
+      },
+    };
+  }, [clientSecret]);
+
+  const canInit =
+    amount >= minPayment &&
+    email.includes('@') &&
+    house.trim().length > 0 &&
+    street.trim().length > 0;
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-semibold text-slate-700">
-          Amount (minimum ${minPayment})
-        </label>
-        <div className="mt-2 flex flex-wrap gap-3">
-          <div className="flex-1 min-w-[200px]">
-            <input
-              type="number"
-              min={minPayment}
-              step="1"
-              required
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => setAmount(String(minPayment))}
-            className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:border-teal-200 hover:text-teal-700"
-          >
-            Annual dues
-          </button>
-          {suggestedDonation && suggestedDonation > 0 ? (
-            <button
-              type="button"
-              onClick={() => setAmount(String(suggestedTotal))}
-              className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:border-teal-200 hover:text-teal-700"
-            >
-              Dues + ${suggestedDonation} donation
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-semibold text-slate-700">
-          Email for receipt
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none"
-        />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
+    <div className="space-y-4">
+      {/* Resident info */}
+      <div className="grid md:grid-cols-3 gap-3">
         <div>
-          <label className="block text-sm font-semibold text-slate-700">
-            House number
+          <label className="block text-sm font-semibold text-slate-700 mb-1">
+            House #
           </label>
           <input
-            type="text"
-            required
-            value={houseNumber}
-            onChange={(event) => setHouseNumber(event.target.value)}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none"
+            value={house}
+            onChange={(e) => setHouse(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none"
+            placeholder="7700"
           />
         </div>
-        <div>
-          <label className="block text-sm font-semibold text-slate-700">
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-slate-700 mb-1">
             Street
           </label>
           <select
-            required
             value={street}
-            onChange={(event) => setStreet(event.target.value)}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-2 text-sm focus:border-teal-500 focus:outline-none"
+            onChange={(e) => setStreet(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none"
           >
-            {streets.length === 0 ? (
-              <option value="" disabled>
-                Add streets in content/streets.json
-              </option>
-            ) : null}
-            {streets.map((option) => (
-              <option key={option} value={option}>
-                {option}
+            {streets.map((s) => (
+              <option key={s} value={s}>
+                {s}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={state === 'sending' || !isFormValid}
-        className="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium disabled:opacity-50"
-      >
-        {state === 'sending' ? 'Redirecting…' : 'Continue to payment'}
-      </button>
+      <div className="grid md:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-1">
+            Email (receipt)
+          </label>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none"
+            placeholder="you@example.com"
+          />
+        </div>
 
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
-    </form>
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-1">
+            Amount
+          </label>
+          <input
+            type="number"
+            min={minPayment}
+            step="1"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none"
+          />
+          <div className="text-xs text-slate-500 mt-1">
+            Minimum: ${minPayment}. Suggested donation: ${suggestedDonation}.
+          </div>
+        </div>
+      </div>
+
+      {/* Initialize */}
+      {!clientSecret ? (
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={createIntent}
+            disabled={!canInit || loading}
+            className="w-full bg-teal-700 hover:bg-teal-800 disabled:opacity-60 text-white px-5 py-3 rounded-lg font-semibold transition"
+          >
+            {loading ? 'Preparing payment…' : 'Continue to payment details'}
+          </button>
+
+          {initError ? (
+            <div className="text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-3">
+              {initError}
+            </div>
+          ) : null}
+
+          <div className="text-xs text-slate-500">
+            We’ll show the secure payment form next — without leaving the site.
+          </div>
+        </div>
+      ) : null}
+
+      {/* Embedded Stripe */}
+      {elementsOptions ? (
+        <Elements stripe={stripePromise} options={elementsOptions}>
+          <InnerForm
+            amount={amount}
+            email={email}
+            address={address}
+            street={street}
+          />
+        </Elements>
+      ) : null}
+    </div>
   );
 }

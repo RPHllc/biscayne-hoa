@@ -28,7 +28,7 @@ export default function PayPage({
           streets={streets}
         />
         <p className="text-xs text-slate-500">
-          You will be redirected to Stripe to complete payment.
+          Secure payment is processed by Stripe — without leaving this site.
         </p>
       </div>
 
