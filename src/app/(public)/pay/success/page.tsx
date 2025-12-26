@@ -12,6 +12,9 @@ export default async function PaySuccessPage({
       <p className="mt-3 text-slate-600">
         Thank you! Your payment was processed successfully.
       </p>
+      <p className="mt-2 text-sm text-slate-500">
+        A confirmation email is on the way. Keep it for your records.
+      </p>
 
       {session_id ? (
         <p className="mt-6 text-sm text-slate-500">

@@ -20,6 +20,33 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Local Stripe testing (Docker)
+
+This project uses the Stripe CLI container to forward webhooks to your local dev server.
+
+1) Add the Stripe and email env vars to `.env.local`:
+
+```
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_API_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+RESEND_API_KEY=...
+PAYMENTS_FROM_EMAIL=...
+PAYMENTS_TO_EMAIL=...
+```
+
+2) Start the dev stack with the Stripe CLI service:
+
+```bash
+docker compose --profile dev up --build
+```
+
+3) After Stripe CLI starts, copy the webhook secret it prints and update
+`STRIPE_WEBHOOK_SECRET` in `.env.local` (then restart the stack).
+
+The Stripe CLI will forward events to `http://web:3000/api/stripe/webhook`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

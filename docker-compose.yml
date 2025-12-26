@@ -9,3 +9,18 @@ services:
       - "8080:3000"
     environment:
       - NODE_ENV=production
+  stripe:
+    image: stripe/stripe-cli:latest
+    container_name: biscayne-hoa-stripe
+    depends_on:
+      - web
+    profiles:
+      - dev
+    env_file:
+      - .env.local
+    command:
+      [
+        "listen",
+        "--forward-to",
+        "http://web:3000/api/stripe/webhook",
+      ]

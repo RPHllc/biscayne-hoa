@@ -17,7 +17,7 @@ export default function PayPage({
       <h2 className="text-3xl font-bold">Pay HOA Dues</h2>
 
       <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-3">
-        <h3 className="text-xl font-bold">Credit / Debit Card</h3>
+        <h3 className="text-xl font-bold">Pay Online</h3>
         <p className="text-slate-600">
           Annual dues are ${dues.annualDues}. You can pay the minimum or add a
           donation above the required amount.
@@ -28,7 +28,8 @@ export default function PayPage({
           streets={streets}
         />
         <p className="text-xs text-slate-500">
-          Secure payment is processed by Stripe — without leaving this site.
+          Pay by card with Apple Pay or Google Pay when available. Bank account
+          and QR options may appear based on your device and Stripe settings.
         </p>
       </div>
 
