@@ -1,6 +1,20 @@
 {
   "cards": [
     {
+      "id": "guardhouse",
+      "icon": "shield",
+      "title": "Guardhouse (24/7)",
+      "lines": ["305-397-8300"],
+      "note": "For immediate security concerns, call 911."
+    },
+    {
+      "id": "guardrover",
+      "icon": "shield",
+      "title": "Rover (10pm-6am)",
+      "lines": ["305-857-8618"],
+      "note": "For immediate security concerns, call 911."
+    },
+    {
       "id": "mailing",
       "icon": "map-pin",
       "title": "Mailing Address",
@@ -11,17 +25,11 @@
       ]
     },
     {
-      "id": "guardhouse",
-      "icon": "shield",
-      "title": "Guardhouse (24/7)",
-      "lines": ["305-555-0199"],
-      "note": "For immediate security concerns, call 911."
-    },
-    {
       "id": "general",
       "icon": "mail",
       "title": "General Inquiries",
-      "email": "info@biscaynepoint.org"
+      "email": "info@biscaynepoint.org",
+      "note": "You can use the send a mensage form"
     }
   ],
 
