@@ -1,5 +1,6 @@
 name = "biscayne-hoa"
 compatibility_date = "2025-01-01"
+pages_build_output_dir = ".open-next"
 
 [[d1_databases]]
 binding = "DB"
