@@ -1,8 +1,8 @@
-import { getRequestContext } from '@cloudflare/next-on-pages';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 import type { D1Database } from '@cloudflare/workers-types';
 
 export function getDb(): D1Database {
-  const context = getRequestContext();
+  const context = getCloudflareContext();
   const db = context?.env?.DB as D1Database | undefined;
   if (!db) {
     throw new Error('Missing D1 database binding');

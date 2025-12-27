@@ -71,7 +71,24 @@ Local testing options:
 Example (replace placeholders):
 
 ```bash
-wrangler pages dev . --d1 DB=<database_id>
+npx opennextjs-cloudflare build
+wrangler pages dev .open-next --d1 DB=<database_id>
+```
+
+## Cloudflare Pages build (OpenNext)
+
+This project uses the OpenNext adapter for Cloudflare.
+
+Suggested Pages build command:
+
+```bash
+npx opennextjs-cloudflare build
+```
+
+Suggested output directory:
+
+```
+.open-next
 ```
 
 ## Learn More
