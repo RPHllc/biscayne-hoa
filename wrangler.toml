@@ -1,0 +1,7 @@
+name = "biscayne-hoa"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "biscayne-hoa"
+database_id = "7526b8b4-f686-4be8-a31a-ab83ad72f686"
