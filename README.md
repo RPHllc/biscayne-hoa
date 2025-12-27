@@ -47,6 +47,33 @@ docker compose --profile dev up --build
 
 The Stripe CLI will forward events to `http://web:3000/api/stripe/webhook`.
 
+## Resident Portal (D1 + magic links)
+
+Portal access is granted to residents who are current on dues (calendar year,
+plus a 3‑month grace period). Access links are delivered by email.
+
+Required bindings and env vars:
+- D1 binding name: `DB`
+- `RESEND_API_KEY`
+- `PORTAL_FROM_EMAIL` (fallbacks to `PAYMENTS_FROM_EMAIL`)
+
+Apply the schema to D1:
+
+```bash
+wrangler d1 execute <database_name> --file=./db/schema.sql
+```
+
+Local testing options:
+1) Use Cloudflare Pages **Preview** deployments with D1 bindings configured.
+2) Run a local Pages dev environment (outside Docker) so D1 bindings are
+   available, then use the app at the dev URL.
+
+Example (replace placeholders):
+
+```bash
+wrangler pages dev . --d1 DB=<database_id>
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

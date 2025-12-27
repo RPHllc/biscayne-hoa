@@ -18,9 +18,4 @@ services:
       - dev
     env_file:
       - .env.local
-    command:
-      [
-        "listen",
-        "--forward-to",
-        "http://web:3000/api/stripe/webhook",
-      ]
+    command: ["listen", "--forward-to", "http://web:3000/api/stripe/webhook"]

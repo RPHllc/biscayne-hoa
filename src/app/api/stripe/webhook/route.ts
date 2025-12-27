@@ -1,4 +1,6 @@
 import Stripe from 'stripe';
+import { getDbOptional } from '@/lib/db';
+import { formatUtcIso } from '@/lib/portal/utils';
 
 export const runtime = 'edge';
 
@@ -164,6 +166,8 @@ export async function POST(request: Request) {
 
     const donationCents = Number(intent.metadata?.donation_cents) || 0;
     const address = intent.metadata?.address || 'Unknown address';
+    const houseNumber = intent.metadata?.house_number || '';
+    const street = intent.metadata?.street || '';
     const method = intent.payment_method_types?.[0];
 
     await sendPaymentEmails({
@@ -176,6 +180,58 @@ export async function POST(request: Request) {
       paymentId: intent.id,
       method,
     });
+
+    const db = getDbOptional();
+    if (!db) {
+      console.warn('D1 database not available; skipping payment persistence');
+      return new Response('ok', { status: 200 });
+    }
+
+    const paidAt = formatUtcIso(new Date(intent.created * 1000));
+    const amountCents = intent.amount_received ?? intent.amount;
+    const currency = intent.currency || 'usd';
+
+    await db
+      .prepare(
+        `INSERT OR IGNORE INTO payments
+          (email, address, house_number, street, purpose, amount_cents, donation_cents, currency, status, method, stripe_payment_intent_id, paid_at)
+         VALUES (?, ?, ?, ?, 'dues', ?, ?, ?, 'paid', 'stripe', ?, ?)`
+      )
+      .bind(
+        payerEmail,
+        address,
+        houseNumber,
+        street,
+        amountCents,
+        donationCents,
+        currency,
+        intent.id,
+        paidAt
+      )
+      .run();
+
+    await db
+      .prepare(
+        `INSERT INTO residents
+          (email, address, house_number, street, last_paid_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(email, address) DO UPDATE SET
+           last_paid_at = CASE
+             WHEN residents.last_paid_at IS NULL THEN excluded.last_paid_at
+             WHEN excluded.last_paid_at > residents.last_paid_at THEN excluded.last_paid_at
+             ELSE residents.last_paid_at
+           END,
+           updated_at = excluded.updated_at`
+      )
+      .bind(
+        payerEmail,
+        address,
+        houseNumber,
+        street,
+        paidAt,
+        formatUtcIso()
+      )
+      .run();
   }
 
   return new Response('ok', { status: 200 });
