@@ -5,7 +5,7 @@ WORKDIR /app
 # Dependencies stage (shared for dev/build/prod caching)
 FROM base AS deps
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --include=optional --no-audit --no-fund
 
 # Development stage (fast hot-reload)
 FROM base AS development
