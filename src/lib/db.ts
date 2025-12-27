@@ -3,7 +3,7 @@ import type { D1Database } from '@cloudflare/workers-types';
 
 export function getDb(): D1Database {
   const context = getCloudflareContext();
-  const db = context?.env?.DB as D1Database | undefined;
+  const db = (context?.env as { DB?: D1Database } | undefined)?.DB;
   if (!db) {
     throw new Error('Missing D1 database binding');
   }
