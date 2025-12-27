@@ -20,7 +20,8 @@ export default async function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const sessionToken = cookies().get('portal_session')?.value;
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get('portal_session')?.value;
   if (!sessionToken) {
     redirect('/portal/login');
   }
