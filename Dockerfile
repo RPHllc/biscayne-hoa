@@ -1,5 +1,4 @@
-FROM node:24-alpine AS base
-RUN apk add --no-cache libc6-compat
+FROM node:24-slim AS base
 WORKDIR /app
 
 # Dependencies stage (shared for dev/build/prod caching)

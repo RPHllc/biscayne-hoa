@@ -1,10 +1,6 @@
+import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import {
-  addDays,
-  formatUtcIso,
-  generateToken,
-  hashToken,
-} from '@/lib/portal/utils';
+import { addDays, formatUtcIso, generateToken, hashToken } from '@/lib/portal/utils';
 
 export const runtime = 'edge';
 
@@ -62,19 +58,19 @@ export async function GET(request: Request) {
     )
     .run();
 
-  const cookieParts = [
-    `portal_session=${sessionToken}`,
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    `Max-Age=${sessionDays * 24 * 60 * 60}`,
-  ];
-  if (process.env.NODE_ENV !== 'development') {
-    cookieParts.push('Secure');
-  }
-
-  const response = Response.redirect(new URL('/portal', request.url));
-  response.headers.set('Set-Cookie', cookieParts.join('; '));
+  const forwardedHost = request.headers.get('x-forwarded-host');
+  const host = forwardedHost || request.headers.get('host');
+  const proto = request.headers.get('x-forwarded-proto') || 'http';
+  const baseUrl =
+    process.env.PUBLIC_SITE_URL || (host ? `${proto}://${host}` : request.url);
+  const response = NextResponse.redirect(new URL('/portal', baseUrl));
+  response.cookies.set('portal_session', sessionToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: sessionDays * 24 * 60 * 60,
+    path: '/',
+    secure: process.env.NODE_ENV !== 'development',
+  });
   response.headers.set('Cache-Control', 'no-store');
   return response;
 }

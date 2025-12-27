@@ -83,7 +83,17 @@ export async function POST(request: Request) {
     )
     .run();
 
-  const origin = new URL(request.url).origin;
+  const forwardedHost = request.headers.get('x-forwarded-host');
+  const host = forwardedHost || request.headers.get('host');
+  const proto = request.headers.get('x-forwarded-proto') || 'http';
+  const origin =
+    process.env.PUBLIC_SITE_URL || (host ? `${proto}://${host}` : undefined);
+  if (!origin) {
+    return Response.json(
+      { error: 'Unable to determine site URL' },
+      { status: 500 }
+    );
+  }
   const link = `${origin}/portal/verify?token=${token}`;
 
   const emailText = [
